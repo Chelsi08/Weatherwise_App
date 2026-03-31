@@ -1,9 +1,7 @@
-from re import S
 import streamlit as st  #The entire UI framework — every button, card, chart lives here
-import requests  #Sends HTTP calls to Open-Meteo and geocoding APIs
 import pandas as pd   #Shapes the API's JSON response into a table the chart can read
 import plotly.express as px     #Draws the interactive hourly temperature chart
-from geopy.geocoders import Nominatim  #Converts a city name into lat/lon coordinates
+from utils import get_coordinates, get_weather, get_weather_condition
 
 st.set_page_config(     #sets the browser tab title, icon, and makes the app use full screen width.
     page_title="WeatherWise",   
@@ -116,7 +114,7 @@ label { color: rgba(255,255,255,0.6) !important; }
 st.title("🌦️ WeatherWise")  
 st.markdown("Your intelligent weather companion.")
 
-st.subheader("📍 Select a City")
+st.subheader("📍 Select your location")
 popular_cities = [
     "Mumbai", "Delhi", "Ahemdabad", "Rajkot", "Indore", "Amritsar", "Lucknow", "California", "Ohio", "Boston", "Toronto",
     "Bangalore","Chennai", "Kolkata",
@@ -125,66 +123,15 @@ popular_cities = [
 ]
 
 city_option = st.selectbox(  # renders the dropdown
-    "Choose a city",
+    "Choose your location",
     options=popular_cities + ["Other (type below)"]  #this just appends one extra option to the end of the list at render time, nothing stored permanently
 )
 
 if city_option == "Other (type below)":   #if they picked Other, show the text box
-    city = st.text_input("Enter city name")
+    city = st.text_input("Enter the location name")
 else:
     city = city_option
 
-
-#st.cache_data-This decorator tells Streamlit: "if the input is the same as last time, return the stored result, don't call the API again." 
-#Faster app, fewer API hits.
-@st.cache_data      
-def get_coordinates(city_name):
-    geolocator = Nominatim(user_agent="weatherwise_app")  #geopy requires you to name your app;
-    location = geolocator.geocode(city_name) #sends the city name to OpenStreetMap's geocode
-    if location:
-        return location.latitude, location.longitude
-    return None, None
-
-@st.cache_data
-def get_weather(lat, lon):
-    url = "https://api.open-meteo.com/v1/forecast"
-    params = {   #this dictionary becomes the URL query string
-        "latitude": lat,
-        "longitude": lon,
-        "current": [   #tells Open-Meteo which real-time values to return right now
-            "temperature_2m",
-            "relative_humidity_2m",
-            "precipitation",
-            "wind_speed_10m",
-            "weather_code",
-            "apparent_temperature"  # Open-Meteo calculates this from temp + humidity + wind combined
-        ],
-        "hourly": "temperature_2m",   #requests hourly temps
-        "timezone": "auto",   #Open-Meteo detects timezone from the lat/lon
-        "forecast_days": 1    #we only want today's hourly data on this page
-    }
-    response = requests.get(url, params=params)    #requests api call to get params from url 
-    return response.json()   #response comes in json format
-
-
-#Open-Meteo returns a WMO weather code (a number), not a description; this function translates it into human-readable text with an emoji
-def get_weather_condition(code):  
-    if code == 0:
-        return "☀️ Clear Sky"
-    elif code in [1, 2, 3]:
-        return "🌤️ Partly Cloudy"
-    elif code in [45, 48]:
-        return "🌫️ Foggy"
-    elif code in [51, 53, 55, 61, 63, 65]:
-        return "🌧️ Rainy"
-    elif code in [71, 73, 75]:
-        return "❄️ Snowy"
-    elif code in [80, 81, 82]:
-        return "🌦️ Showers"
-    elif code in [95, 96, 99]:
-        return "⛈️ Thunderstorm"
-    else:
-        return "🌡️ Unknown"
 
 if city:
     with st.spinner("Fetching weather data..."):   # shows a loading animation while the API calls run; disappears when the block exits
