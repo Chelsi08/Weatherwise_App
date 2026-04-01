@@ -1,7 +1,9 @@
 import streamlit as st  #The entire UI framework — every button, card, chart lives here
 import pandas as pd   #Shapes the API's JSON response into a table the chart can read
 import plotly.express as px     #Draws the interactive hourly temperature chart
-from utils import get_coordinates, get_weather, get_weather_condition
+from utils import get_coordinates, get_weather, get_weather_condition, save_default_city, load_default_city
+
+
 
 st.set_page_config(     #sets the browser tab title, icon, and makes the app use full screen width.
     page_title="WeatherWise",   
@@ -116,22 +118,40 @@ st.markdown("Your intelligent weather companion.")
 
 st.subheader("📍 Select your location")
 popular_cities = [
-    "Mumbai", "Delhi", "Ahemdabad", "Rajkot", "Indore", "Amritsar", "Lucknow", "California", "Ohio", "Boston", "Toronto",
-    "Bangalore","Chennai", "Kolkata",
+    "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata",
     "London", "New York", "Tokyo", "Paris", "Dubai",
     "Sydney", "Singapore"
 ]
 
-city_option = st.selectbox(  # renders the dropdown
-    "Choose your location",
-    options=popular_cities + ["Other (type below)"]  #this just appends one extra option to the end of the list at render time, nothing stored permanently
+# Load from disk first — persists even after browser closes
+# Falls back to session_state if nothing saved on disk yet
+default_city = load_default_city() or st.session_state.get('city', None)
+
+# Pre-select in dropdown if it's a known city
+if default_city in popular_cities:
+    default_index = popular_cities.index(default_city)
+else:
+    default_index = None
+
+city_option = st.selectbox(
+    "Choose a city",
+    options=popular_cities + ["Other (type below)"],
+    index=default_index,
+    placeholder="Select a city..."
 )
 
-if city_option == "Other (type below)":   #if they picked Other, show the text box
-    city = st.text_input("Enter the location name")
+if city_option is None:
+    city = None
+elif city_option == "Other (type below)":
+    saved_other = default_city if default_city not in popular_cities else ""
+    city = st.text_input("Enter city name", value=saved_other)
+    if city:
+        st.session_state['city'] = city
+        save_default_city(city)  # persist to disk
 else:
     city = city_option
-
+    st.session_state['city'] = city
+    save_default_city(city)  # persist to disk
 
 if city:
     with st.spinner("Fetching weather data..."):   # shows a loading animation while the API calls run; disappears when the block exits

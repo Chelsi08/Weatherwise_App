@@ -4,6 +4,8 @@
 import requests
 from geopy.geocoders import Nominatim
 import streamlit as st
+import json
+import os
 
 #st.cache_data-This decorator tells Streamlit: "if the input is the same as last time, return the stored result, don't call the API again." 
 #Faster app, fewer API hits.
@@ -56,3 +58,25 @@ def get_weather_condition(code):
         return "⛈️ Thunderstorm"
     else:
         return "🌡️ Unknown"
+
+
+@st.cache_data
+def get_16day_forecast(lat, lon):
+    # Separate API call from get_weather() — different params, different data shape
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "daily": [
+            "temperature_2m_max",       # highest temp of the day
+            "temperature_2m_min",       # lowest temp of the day
+            "precipitation_sum",        # total rain/snow for the day in mm
+            "wind_speed_10m_max",       # peak wind speed of the day
+            "relative_humidity_2m_max", # peak humidity of the day
+            "weather_code"              # WMO code representing dominant condition
+        ],
+        "timezone": "auto",   # local time based on coordinates
+        "forecast_days": 16   # maximum Open-Meteo allows on free tier
+    }
+    response = requests.get(url, params=params)
+    return response.json()
