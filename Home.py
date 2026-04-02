@@ -1,8 +1,7 @@
 import streamlit as st  #The entire UI framework — every button, card, chart lives here
 import pandas as pd   #Shapes the API's JSON response into a table the chart can read
 import plotly.express as px     #Draws the interactive hourly temperature chart
-from utils import get_coordinates, get_weather, get_weather_condition, save_default_city, load_default_city
-
+from utils import get_coordinates, get_weather, get_weather_condition
 
 
 st.set_page_config(     #sets the browser tab title, icon, and makes the app use full screen width.
@@ -152,6 +151,8 @@ else:
     city = city_option
     st.session_state['city'] = city
     save_default_city(city)  # persist to disk
+
+
 
 if city:
     with st.spinner("Fetching weather data..."):   # shows a loading animation while the API calls run; disappears when the block exits
