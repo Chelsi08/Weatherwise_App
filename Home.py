@@ -115,20 +115,20 @@ label { color: rgba(255,255,255,0.6) !important; }
 st.title("🌦️ WeatherWise")  
 st.markdown("Your intelligent weather companion.")
 
-st.subheader("📍 Select your location")
+st.markdown("### 📍 Select your location")
+
 popular_cities = [
     "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata",
     "London", "New York", "Tokyo", "Paris", "Dubai",
     "Sydney", "Singapore"
 ]
 
-# Load from disk first — persists even after browser closes
-# Falls back to session_state if nothing saved on disk yet
-default_city = load_default_city() or st.session_state.get('city', None)
+# Check session_state for previously selected city
+saved_city = st.session_state.get('city', None)
 
 # Pre-select in dropdown if it's a known city
-if default_city in popular_cities:
-    default_index = popular_cities.index(default_city)
+if saved_city in popular_cities:
+    default_index = popular_cities.index(saved_city)
 else:
     default_index = None
 
@@ -142,17 +142,13 @@ city_option = st.selectbox(
 if city_option is None:
     city = None
 elif city_option == "Other (type below)":
-    saved_other = default_city if default_city not in popular_cities else ""
+    saved_other = saved_city if saved_city not in popular_cities else ""
     city = st.text_input("Enter city name", value=saved_other)
     if city:
         st.session_state['city'] = city
-        save_default_city(city)  # persist to disk
 else:
     city = city_option
     st.session_state['city'] = city
-    save_default_city(city)  # persist to disk
-
-
 
 if city:
     with st.spinner("Fetching weather data..."):   # shows a loading animation while the API calls run; disappears when the block exits
@@ -255,6 +251,6 @@ if city:
                     marker=dict(color='#93c5fd', size=6),   # lighter blue dots
                 )
 
-                st.plotly_chart(fig, use_container_width=True)  #makes the chart stretch to fill whatever column or page width it's in, instead of a fixed pixel size
+                st.plotly_chart(fig, width='stretch')  #makes the chart stretch to fill whatever column or page width it's in, instead of a fixed pixel size
         except Exception as e:
             st.error(f"Something went wrong: {e}")
