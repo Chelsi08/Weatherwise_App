@@ -80,3 +80,123 @@ def get_16day_forecast(lat, lon):
     }
     response = requests.get(url, params=params)
     return response.json()
+
+def score_activity(activity, temp_max, temp_min, humidity, precip, wind):
+    # Each activity has 4 parameters — temp, humidity, precip, wind
+    # Each parameter contributes 2.5 points max → 4 × 2.5 = 10 total
+    # We use temp_max for worst-case heat, temp_min for worst-case cold
+
+    score = 0
+    precautions = []  # list of warning strings shown when score is 5-7
+    
+    if activity == "⚽ Sport":
+        # Ideal: temp 15-28°C, humidity ≤70%, precip ≤1mm, wind ≤30kph
+
+        # Temperature scoring
+        if 15 <= temp_max <= 28:
+            score += 2.5  # ideal range — full points
+        elif 10 <= temp_max <= 32:
+            score += 1.5  # borderline — partial points
+            precautions.append("Temperature is outside ideal range (15–28°C). Stay hydrated.")
+        else:
+            precautions.append("Temperature is too extreme for sport.")
+
+        # Humidity scoring
+        if humidity <= 70:
+            score += 2.5
+        elif humidity <= 85:
+            score += 1.0
+            precautions.append("High humidity (>70%). Take frequent breaks.")
+        else:
+            precautions.append("Very high humidity. Risk of heat exhaustion.")
+
+        # Precipitation scoring
+        if precip == 0:
+            score += 2.5
+        elif precip <= 1:
+            score += 1.5
+            precautions.append("Light rain expected. Wear appropriate footwear.")
+        else:
+            precautions.append("Too much rain for outdoor sport.")
+
+        # Wind scoring
+        if wind <= 30:
+            score += 2.5
+        elif wind <= 45:
+            score += 1.0
+            precautions.append("Moderate wind expected. May affect performance.")
+        else:
+            precautions.append("Very strong wind. Outdoor sport not advisable.")
+
+    elif activity == "🥾 Hiking":
+        # Ideal: temp 10-25°C, humidity ≤80%, precip ≤5mm, wind ≤40kph
+
+        if 10 <= temp_max <= 25:
+            score += 2.5
+        elif 5 <= temp_max <= 30:
+            score += 1.5
+            precautions.append("Temperature outside ideal hiking range (10–25°C).")
+        else:
+            precautions.append("Temperature too extreme for hiking.")
+
+        if humidity <= 80:
+            score += 2.5
+        elif humidity <= 90:
+            score += 1.0
+            precautions.append("High humidity. Carry extra water.")
+        else:
+            precautions.append("Very high humidity. Risk of dehydration.")
+
+        if precip <= 5:
+            score += 2.5
+        elif precip <= 10:
+            score += 1.0
+            precautions.append("Moderate rain expected. Waterproof gear recommended.")
+        else:
+            precautions.append("Heavy rain. Trail conditions may be dangerous.")
+
+        if wind <= 40:
+            score += 2.5
+        elif wind <= 55:
+            score += 1.0
+            precautions.append("Strong wind on exposed trails. Stay cautious.")
+        else:
+            precautions.append("Dangerous wind speeds for hiking.")
+
+    elif activity == "🏖️ Beach":
+        # Ideal: temp 25-35°C, humidity ≤85%, precip 0mm, wind ≤20kph
+
+        if 25 <= temp_max <= 35:
+            score += 2.5
+        elif 20 <= temp_max <= 38:
+            score += 1.5
+            precautions.append("Temperature outside ideal beach range (25–35°C).")
+        else:
+            precautions.append("Too cold or too hot for beach.")
+
+        if humidity <= 85:
+            score += 2.5
+        elif humidity <= 92:
+            score += 1.0
+            precautions.append("High humidity. Stay in shade periodically.")
+        else:
+            precautions.append("Very high humidity. Not comfortable for beach.")
+
+        if precip == 0:
+            score += 2.5
+        elif precip <= 2:
+            score += 1.0
+            precautions.append("Some rain possible. Check forecast before heading out.")
+        else:
+            precautions.append("Rain expected. Beach not advisable.")
+
+        if wind <= 20:
+            score += 2.5
+        elif wind <= 35:
+            score += 1.0
+            precautions.append("Breezy conditions. Secure umbrellas and belongings.")
+        else:
+            precautions.append("Too windy for comfortable beach experience.")
+
+    # Round to 1 decimal place — avoids ugly floats like 7.000000001
+    return round(score, 1), precautions
