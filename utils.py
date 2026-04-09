@@ -200,3 +200,32 @@ def score_activity(activity, temp_max, temp_min, humidity, precip, wind):
 
     # Round to 1 decimal place — avoids ugly floats like 7.000000001
     return round(score, 1), precautions
+
+def assess_agriculture(temp_max, temp_min, precip, humidity, wind):
+    results = {}
+
+    # PLANTING
+    if 15 <= temp_max <= 30 and precip <= 5:
+        results["Planting"] = ("good", f"✅ Good — temp {temp_max}°C, precip {precip}mm. Ideal for planting.")
+    elif 10 <= temp_max <= 35 and precip <= 10:
+        results["Planting"] = ("marginal", f"⚠️ Marginal — temp {temp_max}°C (ideal 15–30°C), precip {precip}mm. Soil may be wet.")
+    else:
+        results["Planting"] = ("poor", f"❌ Poor — temp {temp_max}°C, precip {precip}mm. Too extreme for planting.")
+
+    # IRRIGATION
+    if 10 <= temp_max <= 35 and precip <= 2:
+        results["Irrigation"] = ("good", f"✅ Good — only {precip}mm rain expected. Irrigation beneficial today.")
+    elif precip <= 5:
+        results["Irrigation"] = ("marginal", f"⚠️ Marginal — {precip}mm rain expected. Irrigation may not be needed.")
+    else:
+        results["Irrigation"] = ("poor", f"❌ Poor — {precip}mm rain expected. Skip irrigation, field already wet.")
+
+    # HARVESTING
+    if 15 <= temp_max <= 35 and precip <= 1:
+        results["Harvesting"] = ("good", f"✅ Good — temp {temp_max}°C, only {precip}mm rain. Dry conditions for harvest.")
+    elif precip <= 5:
+        results["Harvesting"] = ("marginal", f"⚠️ Marginal — {precip}mm rain possible. Harvest early morning to avoid wet crops.")
+    else:
+        results["Harvesting"] = ("poor", f"❌ Poor — {precip}mm rain expected. Wet conditions will damage harvested crops.")
+
+    return results
