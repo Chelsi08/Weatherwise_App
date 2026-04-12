@@ -229,3 +229,78 @@ def assess_agriculture(temp_max, temp_min, precip, humidity, wind):
         results["Harvesting"] = ("poor", f"❌ Poor — {precip}mm rain expected. Wet conditions will damage harvested crops.")
 
     return results
+
+@st.cache_data
+def get_air_quality(lat, lon):
+    # Separate Open-Meteo endpoint specifically for air quality data
+    # Different base URL from weather API — air-quality-api instead of api
+    url = "https://air-quality-api.open-meteo.com/v1/air-quality"
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "current": [
+            "european_aqi",      # AQI on European scale 0-500
+            "uv_index",          # UV index 0-11+
+            "carbon_monoxide",   # CO in μg/m³
+            "pm2_5",  # particulate matter — the real cause of Delhi's pollution problem
+        ],
+        "timezone": "auto"
+    }
+    response = requests.get(url, params=params)
+    return response.json()
+
+def interpret_aqi(aqi):
+    # European AQI scale — different from US AQI but same concept
+    # Returns category name, color class, and health message
+    if aqi <= 20:
+        return "Good", "good", "Air quality is excellent. No health concerns."
+    elif aqi <= 40:
+        return "Fair", "fair", "Air quality is acceptable. Sensitive individuals should consider limiting prolonged outdoor exposure."
+    elif aqi <= 60:
+        return "Moderate", "moderate", "Sensitive groups (children, elderly, respiratory conditions) should reduce outdoor activity."
+    elif aqi <= 80:
+        return "Poor", "poor", "Everyone should reduce prolonged outdoor exertion. Wear a mask if going outside."
+    elif aqi <= 100:
+        return "Very Poor", "verypoor", "Avoid outdoor activity. Keep windows closed. Wear N95 mask if going out."
+    else:
+        return "Hazardous", "hazardous", "Health emergency. Stay indoors. Seal windows and doors."
+
+def interpret_uv(uv):
+    # WHO UV index scale
+    if uv <= 2:
+        return "Low", "No protection needed."
+    elif uv <= 5:
+        return "Moderate", "Wear sunscreen SPF 30+. Seek shade during midday."
+    elif uv <= 7:
+        return "High", "Wear SPF 50+, hat, and UV-blocking sunglasses. Limit midday exposure."
+    elif uv <= 10:
+        return "Very High", "Minimise sun exposure 10am–4pm. Full protective clothing recommended."
+    else:
+        return "Extreme", "Avoid going outside during midday hours. Full protection mandatory."
+
+def interpret_co(co):
+    # CO in μg/m³ — WHO guideline is 4000 μg/m³ for 1hr exposure
+    if co <= 1000:
+        return "Safe", "CO levels are well within safe limits."
+    elif co <= 4000:
+        return "Acceptable", "CO levels are within WHO guidelines. Ventilate indoor spaces."
+    elif co <= 10000:
+        return "Elevated", "CO levels are elevated. Avoid prolonged outdoor exposure. Check indoor ventilation."
+    else:
+        return "Dangerous", "Dangerous CO levels. Stay indoors with windows closed. Seek medical advice if feeling unwell."
+    
+def interpret_pm25(pm):
+    # WHO guideline: 15 μg/m³ daily average
+    # India's national standard is 60 μg/m³ — still 4x WHO limit
+    if pm <= 15:
+        return "Safe", "good", "Within WHO safe limits. No health concern."
+    elif pm <= 35:
+        return "Moderate", "fair", "Slightly above WHO limit. Sensitive individuals should limit prolonged outdoor exposure."
+    elif pm <= 55:
+        return "Unhealthy", "moderate", "Above safe limits. Reduce outdoor activity, especially exercise."
+    elif pm <= 150:
+        return "Very Unhealthy", "poor", "Significantly elevated. Everyone should limit outdoor time. Wear N95 mask."
+    elif pm <= 250:
+        return "Hazardous", "verypoor", "Extremely high PM2.5. Stay indoors. Run air purifier if available."
+    else:
+        return "Severely Hazardous", "hazardous", "Emergency level PM2.5. Avoid all outdoor exposure completely."
