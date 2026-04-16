@@ -2,7 +2,7 @@ import streamlit as st  #The entire UI framework — every button, card, chart l
 import pandas as pd   #Shapes the API's JSON response into a table the chart can read
 import plotly.express as px     #Draws the interactive hourly temperature chart
 from utils import get_coordinates, get_weather, get_weather_condition
-
+from styles import apply_styles
 
 st.set_page_config(     #sets the browser tab title, icon, and makes the app use full screen width.
     page_title="WeatherWise",   
@@ -10,107 +10,7 @@ st.set_page_config(     #sets the browser tab title, icon, and makes the app use
     layout="wide" 
 )
 
-# Inject custom CSS into the Streamlit page using a raw HTML style block.
-# unsafe_allow_html=True is required — without it Streamlit strips the HTML.
-# This is the standard way to style Streamlit beyond its built-in theme.
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-
-/* Full page background — deep navy to midnight blue gradient */
-.stApp {
-    background: linear-gradient(160deg, #0a0f1e 0%, #0d1b3e 50%, #0a0f1e 100%);
-    font-family: 'Outfit', sans-serif;
-}
-
-/* Hide the default Streamlit header bar */
-header[data-testid="stHeader"] {
-    background: transparent;
-}
-
-/* Hide the top padding Streamlit adds by default */
-.block-container {
-    padding-top: 2rem;
-}
-
-/* Make the main title white */
-h1 { color: #ffffff !important; }
-
-/* Make subheadings white */
-h3 { color: rgba(255,255,255,0.85) !important; }
-
-/* Style the dropdown label and widget to match the dark theme */
-label { color: rgba(255,255,255,0.6) !important; }
-
-/* Cards row — horizontal flex container */
-.cards-row {
-    display: flex;
-    gap: 16px;
-    margin: 28px 0;
-    flex-wrap: wrap;
-}
-
-/* Individual card — glass panel with blue glow on hover */
-.weather-card {
-    flex: 1;
-    min-width: 130px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-    border: 1px solid rgba(96, 165, 250, 0.2);
-    border-radius: 20px;
-    padding: 26px 16px;
-    text-align: center;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-/* On hover: lift up + add a blue glow ring */
-.weather-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 32px rgba(96, 165, 250, 0.25);
-}
-
-.card-icon { font-size: 30px; margin-bottom: 12px; }
-
-.card-label {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 10px;
-}
-
-/* Large value — word-break prevents truncation on long strings like "Partly Cloudy" */
-.card-value {
-    font-size: 20px;
-    font-weight: 700;
-    color: #e0f0ff;
-    word-break: break-word;
-    line-height: 1.35;
-}
-
-/* City hero section — large centered heading */
-.city-hero {
-    text-align: center;
-    padding: 30px 0 6px 0;
-}
-
-.city-hero-name {
-    font-size: 46px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: -1px;
-    text-shadow: 0 0 40px rgba(96,165,250,0.4);
-}
-
-.city-hero-coords {
-    font-size: 13px;
-    color: rgba(255,255,255,0.35);
-    margin-top: 6px;
-    letter-spacing: 1px;
-}
-</style>
-""", unsafe_allow_html=True)
+apply_styles()
 
 st.title("🌦️ WeatherWise")  
 st.markdown("Your intelligent weather companion.")

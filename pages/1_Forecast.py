@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils import get_coordinates, get_16day_forecast, get_weather_condition
+from styles import apply_styles
 
 st.set_page_config(
     page_title="16-Day Forecast | WeatherWise",
@@ -8,88 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-
-.stApp {
-    background: linear-gradient(160deg, #0a0f1e 0%, #0d1b3e 50%, #0a0f1e 100%);
-    font-family: 'Outfit', sans-serif;
-}
-header[data-testid="stHeader"] { background: transparent; }
-.block-container {
-    padding-top: 2rem;
-    padding-left: 3rem !important;
-    padding-right: 3rem !important;
-    max-width: 100% !important;
-}
-h1 { color: #ffffff !important; }
-h3 { color: rgba(255,255,255,0.85) !important; }
-label { color: rgba(255,255,255,0.6) !important; }
-
-.forecast-row {
-    display: ;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 10px;
-    margin: 24px 0;
-    
-}
-@media (max-width: 900px) {
-    .forecast-row {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-.forecast-card {
-    background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-    border: 1px solid rgba(96,165,250,0.2);
-    border-radius: 16px;
-    padding: 12px 8px;
-    text-align: center;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.forecast-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(96,165,250,0.25);
-}
-
-.forecast-date {
-    font-size: 9px;
-    color: rgba(255,255,255,0.45);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
-
-.forecast-icon { font-size: 26px; margin-bottom: 8px; }
-
-.forecast-temp-max {
-    font-size: 16px;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.forecast-temp-min {
-    font-size: 11px;
-    color: rgba(255,255,255,0.45);
-    margin-bottom: 4px;
-}
-
-.forecast-detail {
-    font-size: 9px;
-    color: rgba(255,255,255,0.5);
-    margin: 2px 0;
-}
-
-.forecast-detail span {
-    color: #93c5fd;
-    font-weight: 600;
-}
-</style>
-""", unsafe_allow_html=True)
-
+apply_styles()
 st.title("📅 16-Day Forecast")
 
 popular_cities = [

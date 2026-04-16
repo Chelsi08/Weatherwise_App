@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import date, timedelta
 from utils import get_coordinates, get_16day_forecast, score_activity
+from styles import apply_styles
 
 st.set_page_config(
     page_title="Activity Planner | WeatherWise",
@@ -9,98 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-
-.stApp {
-    background: linear-gradient(160deg, #0a0f1e 0%, #0d1b3e 50%, #0a0f1e 100%);
-    font-family: 'Outfit', sans-serif;
-}
-header[data-testid="stHeader"] { background: transparent; }
-.block-container {
-    padding-top: 2rem;
-    padding-left: 3rem !important;
-    padding-right: 3rem !important;
-    max-width: 100% !important;
-}
-h1 { color: #ffffff !important; }
-h3 { color: rgba(255,255,255,0.85) !important; }
-label { color: rgba(255,255,255,0.6) !important; }
-
-/* Score card — big centered block showing the number */
-.score-card {
-    text-align: center;
-    padding: 40px 20px;
-    border-radius: 24px;
-    margin: 24px 0;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-}
-
-/* The large score number */
-.score-number {
-    font-size: 80px;
-    font-weight: 700;
-    line-height: 1;
-}
-
-.score-label {
-    font-size: 18px;
-    margin-top: 10px;
-    opacity: 0.8;
-}
-
-/* Green theme for good scores */
-.score-green {
-    background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05));
-    border: 1px solid rgba(34,197,94,0.3);
-    color: #4ade80;
-}
-
-/* Yellow theme for moderate scores */
-.score-yellow {
-    background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(234,179,8,0.05));
-    border: 1px solid rgba(234,179,8,0.3);
-    color: #facc15;
-}
-
-/* Red theme for poor scores */
-.score-red {
-    background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05));
-    border: 1px solid rgba(239,68,68,0.3);
-    color: #f87171;
-}
-
-/* Precaution box — shown for yellow scores */
-.precaution-box {
-    background: rgba(234,179,8,0.08);
-    border: 1px solid rgba(234,179,8,0.2);
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin: 16px 0;
-    color: rgba(255,255,255,0.8);
-}
-
-/* Next best date suggestion — shown for red scores */
-.suggestion-box {
-    background: rgba(96,165,250,0.08);
-    border: 1px solid rgba(96,165,250,0.2);
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin: 16px 0;
-    color: rgba(255,255,255,0.8);
-}
-
-.box-title {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-</style>
-""", unsafe_allow_html=True)
+apply_styles()
 
 st.title("🏃 Activity Planner")
 

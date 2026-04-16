@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import date, timedelta
 from utils import get_coordinates, get_16day_forecast
+from styles import apply_styles
 
 st.set_page_config(
     page_title="Agriculture Advisor | WeatherWise",
@@ -9,128 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-
-.stApp {
-    background: linear-gradient(160deg, #0a0f1e 0%, #0d1b3e 50%, #0a0f1e 100%);
-    font-family: 'Outfit', sans-serif;
-}
-header[data-testid="stHeader"] { background: transparent; }
-.block-container {
-    padding-top: 2rem;
-    padding-left: 3rem !important;
-    padding-right: 3rem !important;
-    max-width: 100% !important;
-}
-h1 { color: #ffffff !important; }
-h3 { color: rgba(255,255,255,0.85) !important; }
-label { color: rgba(255,255,255,0.6) !important; }
-
-/* Each activity gets its own full card */
-.activity-card {
-    border-radius: 20px;
-    padding: 28px 32px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-}
-
-.card-good {
-    background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.04));
-    border: 1px solid rgba(34,197,94,0.25);
-}
-
-.card-marginal {
-    background: linear-gradient(135deg, rgba(234,179,8,0.12), rgba(234,179,8,0.04));
-    border: 1px solid rgba(234,179,8,0.25);
-}
-
-.card-poor {
-    background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));
-    border: 1px solid rgba(239,68,68,0.25);
-}
-
-/* Activity title row */
-.card-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 6px;
-}
-
-/* Status badge — IDEAL / CAUTION / AVOID */
-.status-badge {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-bottom: 16px;
-}
-
-.badge-good     { background: rgba(34,197,94,0.2);  color: #4ade80; }
-.badge-marginal { background: rgba(234,179,8,0.2);  color: #facc15; }
-.badge-poor     { background: rgba(239,68,68,0.2);  color: #f87171; }
-
-/* Weather values row inside card */
-.weather-row {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-}
-
-.weather-item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.weather-item-label {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.weather-item-value {
-    font-size: 18px;
-    font-weight: 700;
-    color: #e0f0ff;
-}
-
-/* Reason — why this status */
-.card-reason {
-    font-size: 14px;
-    color: rgba(255,255,255,0.7);
-    margin-bottom: 14px;
-    line-height: 1.6;
-}
-
-/* Advice — what the farmer should actually do */
-.card-advice {
-    font-size: 13px;
-    color: rgba(255,255,255,0.55);
-    background: rgba(255,255,255,0.04);
-    border-radius: 10px;
-    padding: 12px 16px;
-    line-height: 1.7;
-}
-
-.card-advice-title {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255,255,255,0.35);
-    margin-bottom: 6px;
-}
-</style>
-""", unsafe_allow_html=True)
+apply_styles()
 
 st.title("🌾 Agriculture Advisor")
 
