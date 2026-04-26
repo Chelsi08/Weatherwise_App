@@ -6,7 +6,9 @@ from geopy.geocoders import Nominatim
 import streamlit as st
 import json
 import os
+from styles import apply_styles
 
+apply_styles()
 #st.cache_data-This decorator tells Streamlit: "if the input is the same as last time, return the stored result, don't call the API again." 
 #Faster app, fewer API hits.
 @st.cache_data
@@ -304,3 +306,44 @@ def interpret_pm25(pm):
         return "Hazardous", "verypoor", "Extremely high PM2.5. Stay indoors. Run air purifier if available."
     else:
         return "Severely Hazardous", "hazardous", "Emergency level PM2.5. Avoid all outdoor exposure completely."
+
+def comfort_score(temp_max, temp_min, precip, humidity, wind):
+    # General day quality score 0-10
+    # Not tied to any specific activity — just how pleasant the day is
+    score = 0
+
+    # Temperature — ideal human comfort 18-28°C
+    if 18 <= temp_max <= 28:
+        score += 3.0
+    elif 12 <= temp_max <= 34:
+        score += 1.5
+    else:
+        score += 0
+
+    # Precipitation — less is better
+    if precip == 0:
+        score += 3.0
+    elif precip <= 2:
+        score += 2.0
+    elif precip <= 10:
+        score += 0.5
+    else:
+        score += 0
+
+    # Humidity — ideal 40-65%
+    if 40 <= humidity <= 65:
+        score += 2.0
+    elif humidity <= 80:
+        score += 1.0
+    else:
+        score += 0
+
+    # Wind — ideal below 20kph
+    if wind <= 20:
+        score += 2.0
+    elif wind <= 40:
+        score += 1.0
+    else:
+        score += 0
+
+    return round(score, 1)

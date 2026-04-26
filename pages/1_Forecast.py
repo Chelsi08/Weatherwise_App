@@ -10,6 +10,7 @@ st.set_page_config(
 )
 
 apply_styles()
+
 st.title("📅 16-Day Forecast")
 
 popular_cities = [
@@ -18,15 +19,12 @@ popular_cities = [
     "Sydney", "Singapore"
 ]
 
-# Read city from session_state if already selected on Home
 saved_city = st.session_state.get('city', None)
 
 if saved_city:
-    # City exists — show it as heading, no selector needed
     city = saved_city
     st.markdown(f"### 🌍 Forecast for **{city}**")
 else:
-    # No city yet — show selector
     st.markdown("### 📍 Select a City")
 
     if saved_city in popular_cities:
@@ -64,28 +62,27 @@ if city:
                 cards_html = '<div class="forecast-row">'
 
                 for i in range(len(daily["time"])):
-                    # Convert "2024-03-30" to "Sat 30 Mar"
-                    date = pd.to_datetime(daily["time"][i]).strftime("%a %d %b")
+                    date      = pd.to_datetime(daily["time"][i]).strftime("%a %d %b")
                     condition = get_weather_condition(daily["weather_code"][i])
-                    temp_max = daily["temperature_2m_max"][i]
-                    temp_min = daily["temperature_2m_min"][i]
-                    precip   = daily["precipitation_sum"][i]
-                    wind     = daily["wind_speed_10m_max"][i]
-                    humidity = daily["relative_humidity_2m_max"][i]
+                    temp_max  = daily["temperature_2m_max"][i]
+                    temp_min  = daily["temperature_2m_min"][i]
+                    precip    = daily["precipitation_sum"][i]
+                    wind      = daily["wind_speed_10m_max"][i]
+                    humidity  = daily["relative_humidity_2m_max"][i]
 
-                    cards_html += f"""
-                        <div class="forecast-card">
-                        <div class="forecast-date">{date}</div>
-                        <div class="forecast-icon">{condition.split()[0]}</div>
-                        <div class="forecast-temp-max">{temp_max}°C</div>
-                        <div class="forecast-temp-min">{temp_min}°C</div>
-                        <div class="forecast-detail">💧 <span>{humidity}%</span></div>
-                        <div class="forecast-detail">🌬️ <span>{wind} km/h</span></div>
-                        <div class="forecast-detail">🌧️ <span>{precip} mm</span></div>
-                        </div>
-                    """
+                    cards_html += (
+                        f'<div class="forecast-card">'
+                        f'<div class="forecast-date">{date}</div>'
+                        f'<div class="forecast-icon">{condition.split()[0]}</div>'
+                        f'<div class="forecast-temp-max">{temp_max}°C</div>'
+                        f'<div class="forecast-temp-min">{temp_min}°C</div>'
+                        f'<div class="forecast-detail">💧 <span>{humidity}%</span></div>'
+                        f'<div class="forecast-detail">🌬️ <span>{wind} km/h</span></div>'
+                        f'<div class="forecast-detail">🌧️ <span>{precip} mm</span></div>'
+                        f'</div>'
+                    )
 
-                    cards_html += '</div>'
+                cards_html += '</div>'
                 st.markdown(cards_html, unsafe_allow_html=True)
 
         except Exception as e:
